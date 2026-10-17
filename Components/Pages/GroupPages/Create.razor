@@ -16,8 +16,9 @@
             <DataAnnotationsValidator />
             <ValidationSummary class="text-danger" role="alert"/>
             <div class="mb-3">
+                <span class="text-danger">*</span>
                 <label for="group_name" class="form-label">group_name:</label> 
-                <InputText id="group_name" @bind-Value="Group.group_name" class="form-control" /> 
+                <InputText id="group_name" @bind-Value="Group.group_name" class="form-control" aria-required="true"/> 
                 <ValidationMessage For="() => Group.group_name" class="text-danger" /> 
             </div>        
             <div class="mb-3">

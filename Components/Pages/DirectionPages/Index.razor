@@ -1,4 +1,5 @@
 ﻿@page "/directions"
+@rendermode InteractiveServer
 @using Microsoft.EntityFrameworkCore
 @using Microsoft.AspNetCore.Components.QuickGrid
 @using Academy2.Models
@@ -6,33 +7,71 @@
 @implements IAsyncDisposable
 @inject IDbContextFactory<Academy2.Data.Academy2Context> DbFactory
 
-<PageTitle>Index</PageTitle>
+<PageTitle>Направления</PageTitle>
 
-<div class="controls">
-    <h1>Index</h1>
+<div class="controls mb-3">
+    <div>
+        <h1>Направления</h1>
+        <p>
+            <a href="directions/create" class="btn btn-primary">Добавить</a>
+        </p>
+    </div>
 
-    <p>
-        <a href="directions/create" class="btn btn-primary">Добавить</a>
-    </p>
+    <div>
+        <label for="items-per-page">Элементов на странице:</label>
+        <select id="items-per-page" @bind="pagination.ItemsPerPage" class="form-control d-inline ms-2" style="width: auto;">
+            <option value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+        </select>
+    </div>
 </div>
 
-<QuickGrid Class="table" Items="context.Directions">
-    <PropertyColumn Property="direction => direction.direction_name" />
+<div>
+    <div class="grid-container">
+        
+        <QuickGrid Class="table"
+                   Items="context.Directions"
+                   Pagination="pagination"
+                   SortBy="sortBy">
 
-    <TemplateColumn Context="direction">
-        <a href="@($"directions/edit?direction_id={direction.direction_id}")">Edit</a> |
-        <a href="@($"directions/details?direction_id={direction.direction_id}")">Details</a> |
-        <a href="@($"directions/delete?direction_id={direction.direction_id}")">Delete</a>
-    </TemplateColumn>
-</QuickGrid>
+            
+            <PropertyColumn Property="d => d.direction_name"
+                            Title="Направление"
+                            Class="direction-name"
+                            Sortable="true" />
+
+            <TemplateColumn Title="Действия" Align="Align.Center">
+                <a href="/directions/edit?direction_id=@context.direction_id">Edit</a> |
+                <a href="/directions/details?direction_id=@context.direction_id">Details</a> |
+                <a href="/directions/delete?direction_id=@context.direction_id">Delete</a>
+            </TemplateColumn>
+        </QuickGrid>
+    </div>
+
+    <Paginator State="pagination" />
+</div>
 
 @code {
     private Academy2Context context = default!;
+
+    // Дефолтная сортировка: по direction_name по возрастанию
+    GridSort<Direction> sortBy = GridSort<Direction>.ByAscending(d => d.direction_name);
+
+    // Пагинация по умолчанию
+    PaginationState pagination = new PaginationState { ItemsPerPage = 10 };
 
     protected override void OnInitialized()
     {
         context = DbFactory.CreateDbContext();
     }
 
-    public async ValueTask DisposeAsync() => await context.DisposeAsync();
+    public async ValueTask DisposeAsync()
+    {
+        if (context is not null)
+        {
+            await context.DisposeAsync();
+        }
+    }
 }

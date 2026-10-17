@@ -7,6 +7,7 @@ namespace Academy2.Models
     {
         [Key]
         public int group_id { get; set; }
+        [Required]
         [StringLength(10, MinimumLength = 3)]
         public string group_name {  get; set; }
 
