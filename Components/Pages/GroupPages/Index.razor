@@ -9,11 +9,11 @@
 
 <PageTitle>Группы</PageTitle>
 
-<div class="controls mb-3">
+<div class="controls">
     <div>
         <h1>Группы</h1>
         <p>
-            <a href="groups/create" class="btn btn-primary">Create New</a>
+            <a href="groups/create" class="btn btn-primary">Добавить</a>
         </p>
     </div>
 
@@ -39,14 +39,15 @@
                   SortBy="sortBy">
             
             <PropertyColumn Property="g => g.group_name" Title="Название группы" Sortable="true" Class="group-name" />
-            <PropertyColumn Property="g => g.learning_days" Title="Дни обучения" Class="learning-days" />
+            <PropertyColumn Property="g => g.Direction.direction_name" Title="Направление обучения" Class="direction_name" />
+            <PropertyColumn Property="g => new Week((int)(g.learning_days ?? 0))" Title="Дни обучения" Class="learning-days" />
             <PropertyColumn Property="g => g.start_time" Title="Время начала" Class="start-time" />
             <PropertyColumn Property="g => g.start_date" Title="Дата начала" Class="start-date" />
 
             <TemplateColumn Title="Действия" Align="Align.Center">
-                <a href="@($"groups/edit?group_id={context.group_id}")">Edit</a> |
-                <a href="@($"groups/details?group_id={context.group_id}")">Details</a> |
-                <a href="@($"groups/delete?group_id={context.group_id}")">Delete</a>
+                @* <a href="@($"groups/edit?group_id={context.group_id}")">Edit</a> | *@
+                @* <a href="@($"groups/delete?group_id={context.group_id}")">Delete</a> | *@
+                <a href="@($"groups/details?group_id={context.group_id}")">Details</a>
             </TemplateColumn>
         </QuickGrid>
     </div>
