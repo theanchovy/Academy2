@@ -11,7 +11,7 @@
 
 <div class="controls mb-3">
     <div>
-        <h1>Направления</h1>
+        <h1>Направления обучения</h1>
         <p>
             <a href="directions/create" class="btn btn-primary">Добавить</a>
         </p>
@@ -32,15 +32,21 @@
     <div class="grid-container">
         
         <QuickGrid Class="table"
-                   Items="context.Directions"
+                   Items="context.Directions.Include(d=>d.Groups).ThenInclude(g=>g.Students)"
                    Pagination="pagination"
                    SortBy="sortBy">
 
-            
             <PropertyColumn Property="d => d.direction_name"
                             Title="Направление"
                             Class="direction-name"
                             Sortable="true" />
+
+            <PropertyColumn Property="d => d.Groups.Count"
+                            Title="Направление"
+                            Class="group_name"
+                            Sortable="true" />
+
+            <PropertyColumn Property="d => d.Groups.Sum(g=>g.Students.Count)" />
 
             <TemplateColumn Title="Действия" Align="Align.Center">
                 <a href="/directions/edit?direction_id=@context.direction_id">Edit</a> |
