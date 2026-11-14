@@ -43,7 +43,8 @@
 	public Teacher Teacher { get; set; }
 	ICollection<Discipline> Disciplines { get; set; }
 	ICollection<TeachersDisciplinesRelation> TDR { get; set; }
-	List<TeachersDisciplinesRelation> NewDisciplines = new List<TeachersDisciplinesRelation>();
+	//List<TeachersDisciplinesRelation> NewDisciplines = new List<TeachersDisciplinesRelation>();
+	public List<TeachersDisciplinesRelation> NewDisciplines = new List<TeachersDisciplinesRelation>(); ////////////
 
 	int discipline = -1;
 
