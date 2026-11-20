@@ -33,6 +33,40 @@
                 <li>@tdr.Teacher.full_name</li>
             }
         </ul>
+
+        <h3>Зависимые дисциплины</h3>
+        @if (dependentDisciplines.Count == 0)
+        {
+            <p><em>Нет зависимых дисциплин.</em></p>
+        }
+        else
+        {
+            <ul>
+                @foreach (Discipline d in dependentDisciplines)
+                {
+                    <li>
+                        <a href="@($"/disciplines/details?discipline_id={d.discipline_id}")">@d.discipline_name</a>
+                    </li>
+                }
+            </ul>
+        }
+
+        <h3>Требуемые дисциплины</h3>
+        @if (requiredDisciplines.Count == 0)
+        {
+            <p><em>Нет требуемых дисциплин.</em></p>
+        }
+        else
+        {
+            <ul>
+                @foreach (Discipline d in requiredDisciplines)
+                {
+                    <li>
+                        <a href="@($"/disciplines/details?discipline_id={d.discipline_id}")">@d.discipline_name</a>
+                    </li>
+                }
+            </ul>
+        }
     }
 </div>
 
@@ -41,6 +75,9 @@
 
     [SupplyParameterFromQuery]
     private int discipline_id { get; set; }
+
+    private List<Discipline> dependentDisciplines = new();
+    private List<Discipline> requiredDisciplines = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -51,5 +88,15 @@
         {
             NavigationManager.NavigateTo("notfound");
         }
+
+        dependentDisciplines = await context.DependentDisciplines
+        .Where(r => r.discipline == discipline_id)
+        .Select(r => r.DependentDisciplineNavigation!)
+        .ToListAsync();
+
+        requiredDisciplines = await context.RequiredDisciplines
+            .Where(r => r.discipline == discipline_id)
+            .Select(r => r.RequiredDisciplineNavigation!)
+            .ToListAsync();
     }
 }
