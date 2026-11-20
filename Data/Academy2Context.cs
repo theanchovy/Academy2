@@ -7,7 +7,7 @@ using Academy2.Models;
 
 namespace Academy2.Data
 {
-    public class Academy2Context : DbContext
+    public partial class Academy2Context : DbContext
     {
         public Academy2Context (DbContextOptions<Academy2Context> options)
             : base(options)
@@ -20,5 +20,7 @@ namespace Academy2.Data
         public DbSet<Academy2.Models.Teacher> Teachers { get; set; } = default!;
         public DbSet<Academy2.Models.Discipline> Disciplines { get; set; } = default!;
         public DbSet<Academy2.Models.TeachersDisciplinesRelation> TeachersDisciplinesRelation { get; set; } = default!;
+        public DbSet<Academy2.Models.DependentDiscipline> DependentDisciplines { get; set; } = default!;
+        public DbSet<Academy2.Models.RequiredDiscipline> RequiredDisciplines { get; set; } = default!;
     }
 }
