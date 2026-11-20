@@ -1,0 +1,75 @@
+﻿@using Microsoft.EntityFrameworkCore
+@using Academy2.Models
+@inject IDbContextFactory<Academy2.Data.Academy2Context> DbFactory
+
+<div class="row">
+    <div class="col-md-5">
+        <h5>Зависимые дисциплины</h5>
+        <InputSelect class="form-control discipline-select" @bind-Value="depSelected">
+            <option value="-1" disabled selected>---Выберите дисциплину</option>
+            @foreach (var d in Disciplines.Where(d => d.discipline_id != DisciplineId && !DependentIds.Contains(d.discipline_id)))
+            {
+                <option value="@d.discipline_id">@d.discipline_name</option>
+            }
+        </InputSelect>
+        <button type="button" class="btn btn-primary btn-sm mt-2" @onclick="AddDependent">Добавить</button>
+        <ul class="mt-2">
+            @foreach (var id in DependentIds.ToList())
+            {
+                <li>
+                    @NameById(id)
+                    <button type="button" class="btn btn-link btn-sm text-danger p-0"
+                            @onclick="() => DependentIds.Remove(id)">удалить</button>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="col-md-5">
+        <h5>Требуемые дисциплины</h5>
+        <InputSelect class="form-control discipline-select" @bind-Value="reqSelected">
+            <option value="-1" disabled selected>---Выберите дисциплину</option>
+            @foreach (var d in Disciplines.Where(d => d.discipline_id != DisciplineId && !RequiredIds.Contains(d.discipline_id)))
+            {
+                <option value="@d.discipline_id">@d.discipline_name</option>
+            }
+        </InputSelect>
+        <button type="button" class="btn btn-primary btn-sm mt-2" @onclick="AddRequired">Добавить</button>
+        <ul class="mt-2">
+            @foreach (var id in RequiredIds.ToList())
+            {
+                <li>
+                    @NameById(id)
+                    <button type="button" class="btn btn-link btn-sm text-danger p-0"
+                            @onclick="() => RequiredIds.Remove(id)">удалить</button>
+                </li>
+            }
+        </ul>
+    </div>
+</div>
+
+@code {
+    [Parameter] public int DisciplineId { get; set; }
+    [Parameter] public IEnumerable<int> InitialDependentIds { get; set; } = Enumerable.Empty<int>();
+    [Parameter] public IEnumerable<int> InitialRequiredIds { get; set; } = Enumerable.Empty<int>();
+
+    public HashSet<int> DependentIds { get; private set; } = new();
+    public HashSet<int> RequiredIds { get; private set; } = new();
+
+    List<Discipline> Disciplines = new();
+    int depSelected = -1, reqSelected = -1;
+
+    protected override async Task OnInitializedAsync()
+    {
+        DependentIds = new HashSet<int>(InitialDependentIds);
+        RequiredIds = new HashSet<int>(InitialRequiredIds);
+
+        using var context = DbFactory.CreateDbContext();
+        Disciplines = await context.Disciplines.AsNoTracking().ToListAsync();
+    }
+
+    string NameById(int id) =>
+        Disciplines.FirstOrDefault(d => d.discipline_id == id)?.discipline_name ?? $"#{id}";
+
+    void AddDependent() { if (depSelected != -1) { DependentIds.Add(depSelected); depSelected = -1; } }
+    void AddRequired() { if (reqSelected != -1) { RequiredIds.Add(reqSelected); reqSelected = -1; } }
+}
