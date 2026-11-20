@@ -3,7 +3,7 @@
 @inject IDbContextFactory<Academy2.Data.Academy2Context> DbFactory;
 
 <div>
-	<form>
+	@* <form @onsubmit="Update"> *@
 		<h5>Выберите дисциплину</h5>
 		@if (Disciplines != null)
 		{
@@ -35,7 +35,7 @@
 				</ul>
 			}
 		}
-	</form>
+	@* </form> *@
 </div>
 
 @code {
@@ -43,8 +43,8 @@
 	public Teacher Teacher { get; set; }
 	ICollection<Discipline> Disciplines { get; set; }
 	ICollection<TeachersDisciplinesRelation> TDR { get; set; }
-	//List<TeachersDisciplinesRelation> NewDisciplines = new List<TeachersDisciplinesRelation>();
-	public List<TeachersDisciplinesRelation> NewDisciplines = new List<TeachersDisciplinesRelation>(); ////////////
+	List<TeachersDisciplinesRelation> NewDisciplines = new List<TeachersDisciplinesRelation>();
+	public List<int> NewDisciplineIds => NewDisciplines.Select(x => x.discipline).ToList();
 
 	int discipline = -1;
 
@@ -67,5 +67,15 @@
 		newRelation.Discipline = Disciplines.Where(d => d.discipline_id == discipline).First();
 		NewDisciplines.Add(newRelation);
 		discipline = -1;
+	}
+
+	public async Task Update()
+	{
+		using Academy2.Data.Academy2Context context = DbFactory.CreateDbContext();
+		List<TeachersDisciplinesRelation> pairs = new List<TeachersDisciplinesRelation>();
+		foreach (TeachersDisciplinesRelation tdr in NewDisciplines)
+			pairs.Add(new TeachersDisciplinesRelation { teacher = Teacher.teacher_id, discipline = tdr.discipline });
+			await context.TeachersDisciplinesRelation.AddRangeAsync(pairs);
+			await context.SaveChangesAsync();
 	}
 }
